@@ -7,7 +7,8 @@ over five minute time intervals everyday from October through November in 2012.
 
 Load the appropriate libraries:
 
-```{r, echo = TRUE, warning = FALSE, message = FALSE}
+
+```r
 library(knitr)
 library(ggplot2)
 library(dplyr)
@@ -16,14 +17,26 @@ library(gridExtra)
 
 Head of the original imported dataset:
 
-```{r, echo = TRUE, warning = FALSE, message = FALSE}
+
+```r
   df = read.csv('activity.csv')
   print(head(df))
 ```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
 Histogram of the total number of steps taken per day:
 
-```{r, echo = TRUE, warning = FALSE, message = FALSE}
+
+```r
 total_steps = integer(0)
 week = as.character(df$date)
 week = unique(week)
@@ -37,15 +50,30 @@ histogram = qplot(total_steps, geom = 'histogram', main = 'Total steps taken per
 print(histogram)
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 Mean and median of the total number of steps taken per day:
 
-```{r, echo = TRUE}
+
+```r
 print(mean(total_steps, na.rm = TRUE))
+```
+
+```
+## [1] 9354.23
+```
+
+```r
 print(median(total_steps, na.rm  = TRUE))
 ```
 
+```
+## [1] 10395
+```
+
 Time series plot of the number of steps taken per time interval averaged across all days:
-```{r, echo = TRUE, warning = FALSE, message = FALSE}
+
+```r
 avg_steps = numeric(0)
 filtered = filter(df, steps >= 0)
 intervals = unique(filtered$interval)
@@ -57,22 +85,35 @@ steps_by_interval = as.data.frame(cbind(intervals, avg_steps))
 ggplot(steps_by_interval, aes(x = intervals, y = avg_steps)) + geom_line() + geom_point()
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
 Time interval containing the maximum number of steps:
-```{r, echo = TRUE}
+
+```r
 print(intervals[which(avg_steps == max(avg_steps))])
+```
+
+```
+## [1] 835
 ```
 
 Number of missing values:
 
-```{r, echo = TRUE}
+
+```r
 steps = df$steps
 print(length(steps[which(is.na(steps) == TRUE)]))
+```
+
+```
+## [1] 2304
 ```
 
 New histogram of total number of steps taken per day with missing values filled in.
 Missing values (NA) were replaced with the average for that 5 minute interval.
 
-```{r, echo = TRUE, warning = FALSE, message = FALSE}
+
+```r
 #Fill in missing values w/ average # of steps for that time interval
 full_intervals = df$interval
 for(i in 1:length(steps)) {
@@ -96,11 +137,25 @@ histogram = qplot(total_steps, geom = 'histogram', main = 'Total steps taken per
 print(histogram)
 ```
 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+
 Mean and median of the total number of steps taken per day with NA values replaced:
 
-```{r, echo = TRUE}
+
+```r
 print(mean(total_steps))
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 print(median(total_steps))
+```
+
+```
+## [1] 10766.19
 ```
 
 Replacing NA values appears to normalize the data, as evidenced by the equivalent mean
@@ -109,7 +164,8 @@ and median step values.
 Time series of average step number averaged across all days on either weekends or
 weekdays:
 
-```{r, echo = TRUE, warning = FALSE, message = FALSE}
+
+```r
 #Create a second time-series plot of intervals vs. steps averaged over weekends or weekdays
 #Determine if each date is a weekend or weekday
 df$date = as.Date(as.character(df$date))
@@ -146,3 +202,5 @@ plot2 = ggplot(steps_by_day, aes(x = intervals, y = weekend_avgs)) + geom_line()
   geom_point() + ggtitle('Weekend step averages') + xlab('Interval') + ylab('Average steps')
 grid.arrange(plot1, plot2) #prints multiple plots to one screen
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
